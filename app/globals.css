@@ -3,25 +3,265 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --red: #c8102e;
+  --gold: #f5a623;
+  --ink: #1a1208;
+  --ink2: #2d2416;
+  --paper: #fdfaf4;
+  --paper2: #f5f0e4;
+  --paper3: #ede7d5;
+  --muted: #7a6e5a;
+  --hint: #b5a98c;
+  --border: rgba(26, 18, 8, 0.1);
+  --border2: rgba(26, 18, 8, 0.18);
+  --green: #1d6e45;
+  --blue: #1a4e7a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-paper text-ink antialiased;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Scrollbar — subtle paper tone */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--paper3) var(--paper);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--paper3);
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--hint);
+}
+
+.tcard {
+  @apply rounded-lg border border-black/10 bg-white transition-shadow;
+}
+
+.tcard:hover {
+  box-shadow: 0 4px 16px rgba(26, 18, 8, 0.08);
+}
+
+/* Document surface inside editor / print */
+.doc-paper {
+  @apply bg-white text-ink2;
+  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 28px 32px 40px;
+  border: 0.5px solid rgba(26, 18, 8, 0.1);
+  border-radius: 10px;
+}
+
+.doc-paper h1,
+.doc-paper .doc-title {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.doc-gov {
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.doc-gov-rule {
+  width: 60px;
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--ink2);
+  margin: 10px auto 18px;
+}
+
+.doc-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.doc-num {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.doc-legal {
+  text-align: justify;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.doc-section {
+  font-weight: 700;
+  font-size: 13px;
+  margin: 18px 0 10px;
+  text-transform: uppercase;
+}
+
+.doc-field {
+  display: inline-block;
+  vertical-align: baseline;
+  min-width: 120px;
+  border-bottom: 1px solid var(--ink2);
+  outline: none;
+  padding: 0 2px 1px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.doc-field:not(:empty) {
+  font-style: normal;
+  color: var(--ink2);
+}
+
+.doc-field:empty::before {
+  content: attr(data-placeholder);
+  font-style: italic;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.doc-field:focus {
+  border-bottom-color: var(--red);
+  outline: none;
+}
+
+.doc-block {
+  border: 0.5px dashed transparent;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: justify;
+  margin: 8px 0;
+}
+
+.doc-block:focus {
+  border-color: rgba(26, 18, 8, 0.18);
+  outline: none;
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 10px 0 14px;
+}
+
+.doc-table th,
+.doc-table td {
+  border: 0.5px solid rgba(26, 18, 8, 0.18);
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+.doc-table th {
+  background: var(--paper2);
+  font-weight: 600;
+  text-align: center;
+}
+
+.doc-table td[contenteditable="false"] {
+  background: var(--paper2);
+  color: var(--ink2);
+}
+
+.doc-note {
+  margin-top: 20px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted);
+  text-align: justify;
+}
+
+.doc-sigs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 28px;
+  text-align: center;
+}
+
+.doc-sig-space {
+  height: 60px;
+}
+
+.doc-sig-label {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.doc-sig-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.doc-select,
+.doc-textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 0.5px solid rgba(26, 18, 8, 0.18);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--ink2);
+  margin: 4px 0 8px;
+}
+
+.doc-textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+/* Signup — company step panes */
+@keyframes signup-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
   }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes signup-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.signup-step-enter-right {
+  animation: signup-slide-in-right 0.18s ease forwards;
+}
+
+.signup-step-enter-left {
+  animation: signup-slide-in-left 0.18s ease forwards;
 }
