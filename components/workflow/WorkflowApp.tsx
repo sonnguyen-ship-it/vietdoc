@@ -8,6 +8,7 @@ import {
   WORKFEED_CURRENT_USER,
   WORKFEED_DIRECT_THREADS,
 } from "@/lib/workflow/workfeed/dmData"
+import { WORKFLOW_TAB_BAR_OFFSET } from "@/lib/workflow/workfeed/layout"
 import type { WorkfeedChat, WorkfeedMoodPin, WorkfeedTab } from "@/lib/workflow/workfeed/types"
 import { WorkflowMessages } from "@/components/workflow/panels/WorkflowMessages"
 import { WorkflowMoodboard } from "@/components/workflow/panels/WorkflowMoodboard"
@@ -144,53 +145,69 @@ export function WorkflowApp() {
         <div className="w-[4.5rem]" aria-hidden />
       </header>
 
-      {activeTab === "feed" ? (
-        <div
-          ref={scrollerRef}
-          data-workfeed-vertical
-          onScroll={onFeedScroll}
-          className="h-full w-full snap-y snap-mandatory overflow-y-scroll overscroll-y-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {WORKFEED_POSTS.map((post, index) => (
-            <WorkfeedPostRouter
-              key={post.id}
-              post={post}
-              onScrollUp={scrollToPrevPost}
-              onScrollDown={scrollToNextPost}
-              canScrollUp={index > 0}
-              canScrollDown={index < WORKFEED_POSTS.length - 1}
-              onOpenPost={scrollToPost}
-            />
-          ))}
-        </div>
-      ) : null}
+      <div
+        className="absolute inset-x-0 top-0 z-0 overflow-hidden"
+        style={{ bottom: WORKFLOW_TAB_BAR_OFFSET }}
+      >
+        {activeTab === "feed" ? (
+          <div
+            ref={scrollerRef}
+            data-workfeed-vertical
+            onScroll={onFeedScroll}
+            className="h-full w-full snap-y snap-mandatory overflow-y-scroll overscroll-y-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {WORKFEED_POSTS.map((post, index) => (
+              <WorkfeedPostRouter
+                key={post.id}
+                post={post}
+                onScrollUp={scrollToPrevPost}
+                onScrollDown={scrollToNextPost}
+                canScrollUp={index > 0}
+                canScrollDown={index < WORKFEED_POSTS.length - 1}
+                onOpenPost={scrollToPost}
+              />
+            ))}
+          </div>
+        ) : null}
 
-      {activeTab === "plan" ? <WorkflowPlan /> : null}
-      {activeTab === "dm" ? (
-        <WorkflowMessages
-          chats={chats}
-          openChatId={openDmChatId}
-          onOpenChatHandled={() => setOpenDmChatId(null)}
+        {activeTab === "plan" ? <WorkflowPlan /> : null}
+        {activeTab === "dm" ? (
+          <WorkflowMessages
+            chats={chats}
+            openChatId={openDmChatId}
+            onOpenChatHandled={() => setOpenDmChatId(null)}
+          />
+        ) : null}
+        {activeTab === "moodboard" ? <WorkflowMoodboard onPostToFeed={onPostToFeed} /> : null}
+      </div>
+
+      {fabOpen && !overlayOpen ? (
+        <button
+          type="button"
+          className="absolute inset-x-0 top-0 z-40 bg-black/25"
+          style={{ bottom: WORKFLOW_TAB_BAR_OFFSET }}
+          aria-label="Close menu"
+          onClick={() => setFabOpen(false)}
         />
       ) : null}
-      {activeTab === "moodboard" ? <WorkflowMoodboard onPostToFeed={onPostToFeed} /> : null}
 
-      <WorkflowTabBar activeTab={activeTab} onTabChange={setActiveTab} dark={darkNav} />
-
-      {!overlayOpen ? (
-        <WorkflowFabMenu
-          open={fabOpen}
-          onToggle={() => setFabOpen((v) => !v)}
-          onHighlight={() => {
-            setFabOpen(false)
-            setHighlightOpen(true)
-          }}
-          onNote={() => {
-            setFabOpen(false)
-            setNoteOpen(true)
-          }}
-        />
-      ) : null}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50">
+        <WorkflowTabBar activeTab={activeTab} onTabChange={setActiveTab} dark={darkNav} />
+        {!overlayOpen ? (
+          <WorkflowFabMenu
+            open={fabOpen}
+            onToggle={() => setFabOpen((v) => !v)}
+            onHighlight={() => {
+              setFabOpen(false)
+              setHighlightOpen(true)
+            }}
+            onNote={() => {
+              setFabOpen(false)
+              setNoteOpen(true)
+            }}
+          />
+        ) : null}
+      </div>
 
       {highlightOpen ? (
         <WorkflowHighlightFlow

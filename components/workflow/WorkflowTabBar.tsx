@@ -10,7 +10,7 @@ type WorkflowTabBarProps = {
 
 export function WorkflowTabBar({ activeTab, onTabChange, dark }: WorkflowTabBarProps) {
   const itemClass = (active: boolean) =>
-    `flex w-full flex-col items-center gap-0.5 bg-transparent py-1 text-[10px] font-bold ${
+    `touch-manipulation flex w-full flex-col items-center gap-0.5 bg-transparent py-1 text-[10px] font-bold ${
       active
         ? dark
           ? "text-white"
@@ -22,7 +22,7 @@ export function WorkflowTabBar({ activeTab, onTabChange, dark }: WorkflowTabBarP
 
   return (
     <nav
-      className={`pointer-events-auto absolute inset-x-0 bottom-0 z-20 pb-[max(0.5rem,env(safe-area-inset-bottom))] ${
+      className={`pointer-events-auto absolute inset-x-0 bottom-0 touch-manipulation pb-[max(0.5rem,env(safe-area-inset-bottom))] ${
         dark ? "bg-black/75 backdrop-blur-md" : "bg-white/95 backdrop-blur-md"
       }`}
       aria-label="Workflow navigation"

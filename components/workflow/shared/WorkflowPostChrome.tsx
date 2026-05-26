@@ -30,7 +30,7 @@ export function WorkflowPostChrome({
   const [commentsOpen, setCommentsOpen] = useState(false)
 
   return (
-    <article className="relative h-[100dvh] w-full snap-start snap-always flex-shrink-0 overflow-hidden">
+    <article className="relative h-full min-h-full w-full snap-start snap-always flex-shrink-0 overflow-hidden">
       {children}
       <div
         className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end gap-3 px-4 ${bottomPad}`}
