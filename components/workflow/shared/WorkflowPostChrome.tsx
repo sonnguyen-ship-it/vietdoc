@@ -32,8 +32,13 @@ export function WorkflowPostChrome({
   return (
     <article className="relative h-[100dvh] w-full snap-start snap-always flex-shrink-0 overflow-hidden">
       {children}
-      <div className={`absolute inset-x-0 bottom-0 z-10 flex items-end gap-3 px-4 ${bottomPad}`}>
-        <WorkflowAuthorRow author={post.author} tagRow={post.tagRow} />
+      <div
+        className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end gap-3 px-4 ${bottomPad}`}
+      >
+        <div className="pointer-events-auto min-w-0 flex-1">
+          <WorkflowAuthorRow author={post.author} tagRow={post.tagRow} />
+        </div>
+        <div className="pointer-events-auto flex-shrink-0">
         <WorkflowActionRail
           rail={post.rail}
           onComment={() => setCommentsOpen(true)}
@@ -42,6 +47,7 @@ export function WorkflowPostChrome({
           canScrollUp={canScrollUp}
           canScrollDown={canScrollDown}
         />
+        </div>
       </div>
       <WorkflowCommentSheet
         open={commentsOpen}

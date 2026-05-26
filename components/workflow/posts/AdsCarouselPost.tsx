@@ -1,9 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useLayoutEffect, useRef, useState } from "react"
 import type { WorkfeedCarouselPost } from "@/lib/workflow/workfeed/types"
 import { HighlightLine } from "@/components/workflow/shared/HighlightLine"
 import { WorkflowPostChrome } from "@/components/workflow/shared/WorkflowPostChrome"
+import { useHorizontalCarouselTouch } from "@/lib/workflow/useHorizontalCarouselTouch"
 
 function OverviewCard() {
   const points = "12,48 40,42 68,38 96,32 124,28 152,22 180,14"
@@ -131,102 +132,39 @@ export function AdsCarouselPost({
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [slide, setSlide] = useState(0)
+  const [slideWidth, setSlideWidth] = useState(0)
 
-  const scrollToSlide = useCallback((index: number) => {
+  useHorizontalCarouselTouch(scrollerRef, post.slides.length)
+
+  useLayoutEffect(() => {
     const el = scrollerRef.current
     if (!el) return
-    const clamped = Math.max(0, Math.min(index, post.slides.length - 1))
-    const w = el.clientWidth
-    el.scrollTo({ left: clamped * w, behavior: "smooth" })
-    setSlide(clamped)
-  }, [post.slides.length])
+
+    const measure = () => setSlideWidth(el.clientWidth)
+    measure()
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const scrollToSlide = useCallback(
+    (index: number) => {
+      const el = scrollerRef.current
+      if (!el) return
+      const clamped = Math.max(0, Math.min(index, post.slides.length - 1))
+      const w = el.clientWidth
+      el.scrollTo({ left: clamped * w, behavior: "smooth" })
+      setSlide(clamped)
+    },
+    [post.slides.length]
+  )
 
   const onSlideScroll = useCallback(() => {
     const el = scrollerRef.current
     if (!el) return
     const w = el.clientWidth || 1
     setSlide(Math.round(el.scrollLeft / w))
-  }, [])
-
-  /** Prefer horizontal swipes for slides; vertical swipes still move the feed. */
-  useEffect(() => {
-    const carousel = scrollerRef.current
-    if (!carousel) return
-
-    let startX = 0
-    let startY = 0
-    let axis: "h" | "v" | null = null
-
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length !== 1) return
-      startX = e.touches[0].clientX
-      startY = e.touches[0].clientY
-      axis = null
-    }
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length !== 1) return
-      const dx = e.touches[0].clientX - startX
-      const dy = e.touches[0].clientY - startY
-
-      if (!axis) {
-        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return
-        axis = Math.abs(dx) > Math.abs(dy) ? "h" : "v"
-      }
-
-      if (axis === "v") return
-
-      const max = carousel.scrollWidth - carousel.clientWidth
-      if (max <= 0) return
-      const atStart = carousel.scrollLeft <= 1
-      const atEnd = carousel.scrollLeft >= max - 1
-      const scrollingIn = (dx < 0 && !atEnd) || (dx > 0 && !atStart)
-      if (scrollingIn) e.stopPropagation()
-    }
-
-    const onTouchEnd = () => {
-      axis = null
-    }
-
-    carousel.addEventListener("touchstart", onTouchStart, { passive: true })
-    carousel.addEventListener("touchmove", onTouchMove, { passive: false })
-    carousel.addEventListener("touchend", onTouchEnd, { passive: true })
-    carousel.addEventListener("touchcancel", onTouchEnd, { passive: true })
-
-    return () => {
-      carousel.removeEventListener("touchstart", onTouchStart)
-      carousel.removeEventListener("touchmove", onTouchMove)
-      carousel.removeEventListener("touchend", onTouchEnd)
-      carousel.removeEventListener("touchcancel", onTouchEnd)
-    }
-  }, [])
-
-  /** Let trackpad horizontal gestures scroll slides instead of the vertical feed. */
-  useEffect(() => {
-    const el = scrollerRef.current
-    if (!el) return
-
-    const onWheel = (e: WheelEvent) => {
-      const max = el.scrollWidth - el.clientWidth
-      if (max <= 0) return
-
-      const absX = Math.abs(e.deltaX)
-      const absY = Math.abs(e.deltaY)
-      if (absX <= absY && absX < 2) return
-
-      const goingRight = e.deltaX > 0
-      const goingLeft = e.deltaX < 0
-      const canScroll =
-        (goingRight && el.scrollLeft < max - 1) || (goingLeft && el.scrollLeft > 1)
-
-      if (canScroll) {
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }
-
-    el.addEventListener("wheel", onWheel, { passive: false })
-    return () => el.removeEventListener("wheel", onWheel)
   }, [])
 
   return (
@@ -241,14 +179,18 @@ export function AdsCarouselPost({
       <div
         ref={scrollerRef}
         onScroll={onSlideScroll}
-        className="workfeed-carousel-track absolute inset-0 flex snap-x snap-mandatory overflow-x-scroll overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="workfeed-carousel-track absolute inset-0 z-[1] flex snap-x snap-mandatory overflow-x-scroll overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         aria-label="Ads report slides"
       >
         {post.slides.map((s, i) => (
           <div
             key={s.label}
-            className="relative h-full min-w-full flex-[0_0_100%] snap-start snap-always overflow-y-auto overscroll-y-contain px-4 pb-36 pt-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            style={{ background: s.background }}
+            className="relative h-full flex-shrink-0 snap-start snap-always overflow-hidden px-4 pb-36 pt-12"
+            style={{
+              background: s.background,
+              width: slideWidth > 0 ? slideWidth : "100%",
+              minWidth: slideWidth > 0 ? slideWidth : "100%",
+            }}
           >
             <p className="text-xs font-extrabold text-[#1a1208]/70">{s.label}</p>
             <div className="mt-4 text-2xl">
@@ -273,7 +215,7 @@ export function AdsCarouselPost({
         <button
           type="button"
           onClick={() => scrollToSlide(slide - 1)}
-          className="absolute left-1 top-1/2 z-20 -translate-y-1/2 bg-transparent px-2 py-4 text-2xl font-bold text-[#1a1208]/40"
+          className="absolute left-1 top-1/2 z-20 -translate-y-1/2 bg-transparent px-3 py-6 text-3xl font-bold text-[#1a1208]/50"
           aria-label="Previous slide"
         >
           ‹
@@ -283,20 +225,20 @@ export function AdsCarouselPost({
         <button
           type="button"
           onClick={() => scrollToSlide(slide + 1)}
-          className="absolute right-1 top-1/2 z-20 -translate-y-1/2 bg-transparent px-2 py-4 text-2xl font-bold text-[#1a1208]/40"
+          className="absolute right-1 top-1/2 z-20 -translate-y-1/2 bg-transparent px-3 py-6 text-3xl font-bold text-[#1a1208]/50"
           aria-label="Next slide"
         >
           ›
         </button>
       ) : null}
 
-      <div className="absolute inset-x-0 bottom-[5.5rem] z-20 flex justify-center gap-1.5">
+      <div className="pointer-events-none absolute inset-x-0 bottom-[5.5rem] z-20 flex justify-center gap-1.5">
         {post.slides.map((_, i) => (
           <button
             key={i}
             type="button"
             onClick={() => scrollToSlide(i)}
-            className="bg-transparent p-1"
+            className="pointer-events-auto bg-transparent p-2"
             aria-label={`Slide ${i + 1}`}
             aria-current={i === slide}
           >

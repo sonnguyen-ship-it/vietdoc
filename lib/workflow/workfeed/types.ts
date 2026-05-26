@@ -118,11 +118,13 @@ export type WorkfeedNotification = {
 export type WorkfeedChatMessage = {
   id: string
   sender: string
-  kind: "text" | "table" | "list-card"
+  kind: "text" | "table" | "list-card" | "highlight"
   text?: string
   table?: { headers: string[] }
   listCard?: { items: string[]; caption: string }
   align: "left" | "right"
+  /** SVG path for highlight circle sketch */
+  highlightPath?: string
 }
 
 export type WorkfeedChat = {
@@ -134,6 +136,44 @@ export type WorkfeedChat = {
   time: string
   unread: number
   messages: WorkfeedChatMessage[]
+  kind?: "group" | "direct"
+  handle?: string
 }
 
-export type WorkfeedTab = "feed" | "notif" | "dm" | "profile"
+export type WorkfeedDmRecipient = {
+  id: string
+  name: string
+  handle: string
+  initials: string
+  avatarBg: string
+}
+
+export type WorkfeedTab = "feed" | "plan" | "dm" | "moodboard"
+
+export type WorkfeedPlanSheet = {
+  id: string
+  title: string
+  subtitle: string
+  columns: string[]
+  rows: string[][]
+}
+
+export type WorkfeedMoodboardProject = {
+  id: string
+  name: string
+  color: string
+}
+
+export type WorkfeedMoodPin = {
+  id: string
+  title: string
+  projectId: string
+  gradient: string
+  height: number
+  tags: string[]
+  saved: boolean
+  /** External brand reference (winning ads section) */
+  brand?: string
+  statLine?: string
+  channel?: string
+}

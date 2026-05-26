@@ -42,23 +42,15 @@ export function WorkflowTabBar({ activeTab, onTabChange, dark }: WorkflowTabBarP
         <li className="flex-1">
           <button
             type="button"
-            onClick={() => onTabChange("notif")}
-            className={itemClass(activeTab === "notif")}
-            aria-current={activeTab === "notif" ? "page" : undefined}
+            onClick={() => onTabChange("plan")}
+            className={itemClass(activeTab === "plan")}
+            aria-current={activeTab === "plan" ? "page" : undefined}
           >
-            <span className="text-base leading-none">🔔</span>
-            <span>Notif</span>
+            <span className="text-base leading-none">▦</span>
+            <span>Plan</span>
           </button>
         </li>
-        <li className="-mt-3 flex flex-1 justify-center">
-          <button
-            type="button"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-red text-2xl font-light text-white shadow-lg"
-            aria-label="Create post"
-          >
-            ＋
-          </button>
-        </li>
+        <li className="flex-1" aria-hidden />
         <li className="flex-1">
           <button
             type="button"
@@ -73,12 +65,13 @@ export function WorkflowTabBar({ activeTab, onTabChange, dark }: WorkflowTabBarP
         <li className="flex-1">
           <button
             type="button"
-            onClick={() => onTabChange("profile")}
-            className={itemClass(activeTab === "profile")}
-            aria-current={activeTab === "profile" ? "page" : undefined}
+            onClick={() => onTabChange("moodboard")}
+            className={itemClass(activeTab === "moodboard")}
+            aria-current={activeTab === "moodboard" ? "page" : undefined}
+            aria-label="Moodboard"
           >
-            <span className="text-base leading-none">☺</span>
-            <span>Profile</span>
+            <span className="text-base leading-none">▣</span>
+            <span>Board</span>
           </button>
         </li>
       </ul>

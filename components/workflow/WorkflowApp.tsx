@@ -2,22 +2,37 @@
 
 import Link from "next/link"
 import { useCallback, useRef, useState } from "react"
-import { WORKFEED_POSTS, WORKFEED_STORIES } from "@/lib/workflow/workfeed/content"
-import type { WorkfeedStory, WorkfeedTab } from "@/lib/workflow/workfeed/types"
+import { WORKFEED_CHATS, WORKFEED_POSTS } from "@/lib/workflow/workfeed/content"
+import {
+  dmThreadIdForRecipient,
+  WORKFEED_CURRENT_USER,
+  WORKFEED_DIRECT_THREADS,
+} from "@/lib/workflow/workfeed/dmData"
+import type { WorkfeedChat, WorkfeedMoodPin, WorkfeedTab } from "@/lib/workflow/workfeed/types"
 import { WorkflowMessages } from "@/components/workflow/panels/WorkflowMessages"
-import { WorkflowNotifications } from "@/components/workflow/panels/WorkflowNotifications"
-import { WorkflowProfile } from "@/components/workflow/panels/WorkflowProfile"
-import { WorkflowStories } from "@/components/workflow/panels/WorkflowStories"
+import { WorkflowMoodboard } from "@/components/workflow/panels/WorkflowMoodboard"
+import { WorkflowPlan } from "@/components/workflow/panels/WorkflowPlan"
 import { WorkfeedPostRouter } from "@/components/workflow/posts/WorkfeedPostRouter"
+import { WorkflowFabMenu } from "@/components/workflow/WorkflowFabMenu"
+import { WorkflowHighlightFlow } from "@/components/workflow/WorkflowHighlightFlow"
+import { WorkflowNoteEditor } from "@/components/workflow/WorkflowNoteEditor"
 import { WorkflowTabBar } from "@/components/workflow/WorkflowTabBar"
+
+function buildInitialChats(): WorkfeedChat[] {
+  return [...WORKFEED_CHATS, ...WORKFEED_DIRECT_THREADS]
+}
 
 export function WorkflowApp() {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState<WorkfeedTab>("feed")
   const [feedIndex, setFeedIndex] = useState(0)
-  const [story, setStory] = useState<{ stories: WorkfeedStory[]; index: number } | null>(
-    null
-  )
+  const [toast, setToast] = useState<string | null>(null)
+  const [fabOpen, setFabOpen] = useState(false)
+  const [highlightOpen, setHighlightOpen] = useState(false)
+  const [noteOpen, setNoteOpen] = useState(false)
+  const overlayOpen = highlightOpen || noteOpen
+  const [chats, setChats] = useState<WorkfeedChat[]>(buildInitialChats)
+  const [openDmChatId, setOpenDmChatId] = useState<string | null>(null)
 
   const scrollToPost = useCallback((postId: string) => {
     const idx = WORKFEED_POSTS.findIndex((p) => p.id === postId)
@@ -50,10 +65,53 @@ export function WorkflowApp() {
     setFeedIndex(Math.min(Math.max(idx, 0), WORKFEED_POSTS.length - 1))
   }, [])
 
-  const openStory = useCallback((s: WorkfeedStory) => {
-    const index = WORKFEED_STORIES.findIndex((x) => x.id === s.id)
-    setStory({ stories: WORKFEED_STORIES, index: index >= 0 ? index : 0 })
+  const onPostToFeed = useCallback((pin: WorkfeedMoodPin, projectName: string) => {
+    setToast(`Posted “${pin.title}” to team Feed · ${projectName}`)
+    setActiveTab("feed")
+    window.setTimeout(() => setToast(null), 3200)
   }, [])
+
+  const onHighlightSend = useCallback(
+    (payload: {
+      recipient: { id: string; name: string }
+      text: string
+      highlightPath: string
+    }) => {
+      const threadId = dmThreadIdForRecipient(payload.recipient.id)
+      const now = new Date().toLocaleTimeString("vi-VN", {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.id !== threadId) return chat
+          const msg = {
+            id: `hl-${Date.now()}`,
+            sender: WORKFEED_CURRENT_USER,
+            kind: "highlight" as const,
+            text: payload.text,
+            align: "right" as const,
+            highlightPath: payload.highlightPath,
+          }
+          return {
+            ...chat,
+            messages: [...chat.messages, msg],
+            preview: payload.text,
+            time: now,
+          }
+        })
+      )
+
+      setHighlightOpen(false)
+      setFabOpen(false)
+      setActiveTab("dm")
+      setOpenDmChatId(threadId)
+      setToast(`Sent to ${payload.recipient.name}`)
+      window.setTimeout(() => setToast(null), 2800)
+    },
+    []
+  )
 
   const activePost = WORKFEED_POSTS[feedIndex]
   const darkNav = activeTab === "feed" && activePost?.kind === "video-brief"
@@ -91,7 +149,7 @@ export function WorkflowApp() {
           ref={scrollerRef}
           data-workfeed-vertical
           onScroll={onFeedScroll}
-          className="h-full w-full snap-y snap-mandatory overflow-y-scroll overscroll-y-contain [-ms-overflow-style:none] [scrollbar-width:none] [touch-action:pan-y] [&::-webkit-scrollbar]:hidden"
+          className="h-full w-full snap-y snap-mandatory overflow-y-scroll overscroll-y-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {WORKFEED_POSTS.map((post, index) => (
             <WorkfeedPostRouter
@@ -107,18 +165,49 @@ export function WorkflowApp() {
         </div>
       ) : null}
 
-      {activeTab === "notif" ? <WorkflowNotifications onOpenStory={openStory} /> : null}
-      {activeTab === "dm" ? <WorkflowMessages /> : null}
-      {activeTab === "profile" ? <WorkflowProfile /> : null}
+      {activeTab === "plan" ? <WorkflowPlan /> : null}
+      {activeTab === "dm" ? (
+        <WorkflowMessages
+          chats={chats}
+          openChatId={openDmChatId}
+          onOpenChatHandled={() => setOpenDmChatId(null)}
+        />
+      ) : null}
+      {activeTab === "moodboard" ? <WorkflowMoodboard onPostToFeed={onPostToFeed} /> : null}
 
       <WorkflowTabBar activeTab={activeTab} onTabChange={setActiveTab} dark={darkNav} />
 
-      {story ? (
-        <WorkflowStories
-          stories={story.stories}
-          initialIndex={story.index}
-          onClose={() => setStory(null)}
+      {!overlayOpen ? (
+        <WorkflowFabMenu
+          open={fabOpen}
+          onToggle={() => setFabOpen((v) => !v)}
+          onHighlight={() => {
+            setFabOpen(false)
+            setHighlightOpen(true)
+          }}
+          onNote={() => {
+            setFabOpen(false)
+            setNoteOpen(true)
+          }}
         />
+      ) : null}
+
+      {highlightOpen ? (
+        <WorkflowHighlightFlow
+          onClose={() => setHighlightOpen(false)}
+          onSend={onHighlightSend}
+        />
+      ) : null}
+
+      {noteOpen ? <WorkflowNoteEditor onClose={() => setNoteOpen(false)} /> : null}
+
+      {toast ? (
+        <div
+          className="pointer-events-none absolute inset-x-4 top-[max(3.5rem,env(safe-area-inset-top))] z-[70] rounded-xl bg-[#1a1208]/92 px-4 py-3 text-center text-xs font-semibold text-white shadow-lg"
+          role="status"
+        >
+          {toast}
+        </div>
       ) : null}
     </div>
   )
