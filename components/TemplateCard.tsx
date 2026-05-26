@@ -1,6 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import type { Template } from "@/lib/types"
+import { TEMPLATE_SLUG_BY_ID } from "@/lib/templateMeta"
 import { useLang } from "@/context/LangContext"
 
 type TemplateCardProps = {
@@ -54,7 +56,20 @@ export function TemplateCard({ template, onOpen }: TemplateCardProps) {
         </div>
         <div>
           <h3 className="font-display text-lg font-semibold leading-snug text-ink">
-            {template.name[lang]}
+            {TEMPLATE_SLUG_BY_ID[template.id] ? (
+              <Link
+                href={`/mau/${TEMPLATE_SLUG_BY_ID[template.id]}`}
+                className="hover:underline"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") e.stopPropagation()
+                }}
+              >
+                {template.name[lang]}
+              </Link>
+            ) : (
+              template.name[lang]
+            )}
           </h3>
           <p className="mt-1 line-clamp-3 text-sm text-muted">
             {template.description[lang]}

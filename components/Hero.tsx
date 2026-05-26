@@ -33,26 +33,25 @@ export function Hero() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold/90">
           {lang === "vi"
-            ? "Thư viện văn bản doanh nghiệp"
-            : "Vietnamese business document library"}
+            ? "THAY THẾ MICROSOFT WORD TẠI VIỆT NAM"
+            : "SOFTWARE MADE IN VIETNAM"}
         </p>
         <h1 className="mt-3 max-w-3xl font-display text-3xl font-semibold leading-tight sm:text-4xl">
           {lang === "vi" ? (
             <>
-              VietDoc — soạn{" "}
-              <em className="not-italic text-gold">đúng chuẩn</em>, ký tự tin
+              VietDoc — Microsoft Word{" "}
+              <em className="not-italic text-gold">phiên bản Việt Nam</em>
             </>
           ) : (
             <>
-              VietDoc — draft{" "}
-              <em className="not-italic text-gold">compliant</em> documents with
-              confidence
+              VietDoc — Microsoft Word, the{" "}
+              <em className="not-italic text-gold">Vietnamese edition</em>
             </>
           )}
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
           {lang === "vi"
-            ? "Hợp đồng lao động, hoá đơn VAT, tờ khai thuế TNCN, biên bản họp — tất cả được cập nhật theo thông tư mới nhất. Không cần Word. Không cần crack."
+            ? "Một lựa chọn thay thế Microsoft Word cho người dùng ở Việt Nam: soạn hợp đồng lao động, tờ khai thuế TNCN, biên bản họp và xuất .docx ngay trên trình duyệt. Không cần Word crack."
             : "Labour contracts, VAT invoices, PIT returns, meeting minutes — all updated to the latest circulars. No Word. No cracks."}
         </p>
         <HeroCTAButtons />

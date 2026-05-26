@@ -18,8 +18,15 @@ type LangContextValue = {
 
 const LangContext = createContext<LangContextValue | null>(null)
 
-export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("vi")
+export function LangProvider({
+  children,
+  defaultLang = "vi",
+}: {
+  children: ReactNode
+  /** Used by `/en` route group so the first paint matches English. */
+  defaultLang?: Lang
+}) {
+  const [lang, setLang] = useState<Lang>(defaultLang)
 
   const toggleLang = useCallback(() => {
     setLang((l) => (l === "vi" ? "en" : "vi"))

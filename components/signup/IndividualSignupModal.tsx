@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSignup } from "@/context/SignupContext"
+import { deliverSignup, type SignupDeliveryMode } from "@/lib/deliverSignup"
 import { ModalShell } from "@/components/signup/shared/ModalShell"
 import { RadioPills } from "@/components/signup/shared/RadioPills"
 import { SuccessState } from "@/components/signup/shared/SuccessState"
@@ -31,6 +32,9 @@ export function IndividualSignupModal() {
   const [nameError, setNameError] = useState("")
   const [emailError, setEmailError] = useState("")
   const [copied, setCopied] = useState(false)
+  const [delivery, setDelivery] = useState<SignupDeliveryMode | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [submitError, setSubmitError] = useState("")
   const nameRef = useRef<HTMLInputElement>(null)
 
   const handleClose = useCallback(() => {
@@ -41,6 +45,9 @@ export function IndividualSignupModal() {
     setNameError("")
     setEmailError("")
     setCopied(false)
+    setDelivery(null)
+    setSaving(false)
+    setSubmitError("")
     closeInd()
   }, [closeInd])
 
@@ -59,12 +66,40 @@ export function IndividualSignupModal() {
     return () => window.removeEventListener("keydown", onKey)
   }, [indOpen, handleClose])
 
-  const submit = () => {
+  const submit = async () => {
     const ne = validateName(name)
     const ee = validateEmail(email)
     setNameError(ne)
     setEmailError(ee)
+    setSubmitError("")
     if (ne || ee) return
+    const lines = [
+      "Loại: Đăng ký cá nhân (VietDoc)",
+      `Vị trí hàng chờ (hiển thị): #${wlCount + 1}`,
+      `Họ tên: ${name.trim()}`,
+      `Email: ${email.trim()}`,
+      `Phần mềm thường dùng: ${software}`,
+    ]
+    setSaving(true)
+    const { mode, error } = await deliverSignup(
+      {
+        type: "individual",
+        name: name.trim(),
+        email: email.trim(),
+        software,
+        waitlist_display_position: wlCount + 1,
+      },
+      {
+        subject: "VietDoc — Đăng ký cá nhân",
+        body: lines.join("\n"),
+      }
+    )
+    setSaving(false)
+    if (error) {
+      setSubmitError(error)
+      return
+    }
+    setDelivery(mode)
     setSubmitted(true)
   }
 
@@ -150,13 +185,20 @@ export function IndividualSignupModal() {
             />
           </div>
 
+          {submitError ? (
+            <p className="mb-3 rounded border border-red/30 bg-red/5 px-3 py-2 text-xs text-red">
+              {submitError}
+            </p>
+          ) : null}
+
           <button
             type="button"
-            onClick={submit}
-            className="flex w-full items-center justify-center gap-2 rounded bg-[#C8102E] py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            onClick={() => void submit()}
+            disabled={saving}
+            className="flex w-full items-center justify-center gap-2 rounded bg-[#C8102E] py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             <i className="ti ti-user-check text-base" aria-hidden />
-            Đăng ký và giữ chỗ →
+            {saving ? "Đang gửi…" : "Đăng ký và giữ chỗ →"}
           </button>
           <p className="mt-2 text-center text-[11px] text-[#B5A98C]">
             ✓ Miễn phí hoàn toàn · ✓ Không spam · ✓ Huỷ bất cứ lúc nào
@@ -165,7 +207,13 @@ export function IndividualSignupModal() {
       ) : (
         <SuccessState
           title="Đã đăng ký thành công! 🎉"
-          subtitle="Chúng tôi sẽ gửi email khi tài khoản được kích hoạt. Mời bạn bè để lên hàng chờ nhanh hơn."
+          subtitle={
+            delivery === "supabase"
+              ? "Chúng tôi đã lưu thông tin của bạn. Đội ngũ VietDoc sẽ liên hệ qua email khi tài khoản được kích hoạt."
+              : delivery === "mailto"
+                ? "Đã mở thư nháp — trong ứng dụng thư, nhấn Gửi để chúng tôi nhận được thông tin của bạn. Sau đó bạn sẽ nhận email khi tài khoản được kích hoạt."
+                : "Trang chưa bật tiếp nhận đơn tự động. Vui lòng liên hệ VietDoc trực tiếp hoặc thử lại sau."
+          }
         >
           <div className="text-left">
             <p className={labelClass}>Link giới thiệu của bạn</p>

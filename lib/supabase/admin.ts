@@ -1,0 +1,18 @@
+import { createClient } from "@supabase/supabase-js"
+
+/** Server-only Supabase client (service role bypasses RLS). Do not import from client components. */
+export function createSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !serviceKey) return null
+  return createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}
+
+export function isSupabaseSignupConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  )
+}

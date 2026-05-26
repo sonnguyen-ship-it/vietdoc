@@ -26,6 +26,12 @@ body {
   @apply bg-paper text-ink antialiased;
 }
 
+/* Workflow — horizontal carousel inside vertical snap feed */
+.workfeed-carousel-track {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
 /* Scrollbar — subtle paper tone */
 * {
   scrollbar-width: thin;
@@ -264,4 +270,101 @@ body {
 
 .signup-step-enter-left {
   animation: signup-slide-in-left 0.18s ease forwards;
+}
+
+/* DocMod trial editor — module chrome (Dùng thử) */
+.docmod-type-badge {
+  background: #e6f1fb;
+  color: #185fa5;
+}
+
+.docmod-editable.docmod-spacer-preset {
+  min-height: 10mm;
+  line-height: 1.35;
+}
+
+.docmod-editable.docmod-spacer-preset:empty:before {
+  content: none;
+}
+
+.docmod-editable:empty:before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.docmod-empty-flow:empty:before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.docmod-module.dragging {
+  opacity: 0.4;
+}
+
+/* Side-by-side row + 5-zone drag targets (Dùng thử DocMod) */
+.docmod-module-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 4px;
+}
+.docmod-module-row > .docmod-module {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+}
+.docmod-module-row.docmod-drag-over-top {
+  border-top: none !important;
+  box-shadow: inset 0 2.5px 0 0 #378add !important;
+}
+.docmod-module-row.docmod-drag-over-bottom {
+  border-bottom: none !important;
+  box-shadow: inset 0 -2.5px 0 0 #378add !important;
+}
+.docmod-module-face.docmod-drag-over-left {
+  border: 0 !important;
+  box-shadow: inset 2.5px 0 0 0 #378add !important;
+  background-image: linear-gradient(to right, rgba(55, 138, 221, 0.06) 0%, transparent 40%);
+}
+.docmod-module-face.docmod-drag-over-right {
+  border: 0 !important;
+  box-shadow: inset -2.5px 0 0 0 #378add !important;
+  background-image: linear-gradient(to left, rgba(55, 138, 221, 0.06) 0%, transparent 40%);
+}
+.docmod-module-face.docmod-drag-over-top {
+  border: 0 !important;
+  box-shadow: inset 0 2.5px 0 0 #378add !important;
+}
+.docmod-module-face.docmod-drag-over-bottom {
+  border: 0 !important;
+  box-shadow: inset 0 -2.5px 0 0 #378add !important;
+}
+
+@keyframes docmod-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+.docmod-caret {
+  animation: docmod-caret-blink 1.1s step-end infinite;
+}
+
+@media print {
+  [data-docmod-sidebar],
+  [data-docmod-toolbar],
+  [data-docmod-status] {
+    display: none !important;
+  }
+  [data-docmod-canvas] {
+    background: white !important;
+  }
 }

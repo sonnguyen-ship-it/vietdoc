@@ -2,12 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSignup } from "@/context/SignupContext"
+import { deliverSignup, type SignupDeliveryMode } from "@/lib/deliverSignup"
 import { CheckPills } from "@/components/signup/shared/CheckPills"
 import { ModalShell } from "@/components/signup/shared/ModalShell"
 import { RadioPills } from "@/components/signup/shared/RadioPills"
 import { SuccessState } from "@/components/signup/shared/SuccessState"
 
 const SIZES = ["1–5 người", "6–20 người", "21–100 người", "100+ người"] as const
+
+const CO_SOFTWARE_LABELS: Record<string, string> = {
+  "ms-legit": "Microsoft Office (bản quyền)",
+  crack: "Microsoft Office (crack)",
+  google: "Google Workspace",
+  wps: "WPS Office",
+  none: "Không có / dùng giấy tờ",
+}
 
 function validateEmail(v: string) {
   const t = v.trim()
@@ -21,6 +30,9 @@ export function CompanySignupModal() {
   const direction = useRef<"forward" | "back">("forward")
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [submitted, setSubmitted] = useState(false)
+  const [delivery, setDelivery] = useState<SignupDeliveryMode | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
   const [coName, setCoName] = useState("")
   const [coEmail, setCoEmail] = useState("")
@@ -39,6 +51,9 @@ export function CompanySignupModal() {
   const handleClose = useCallback(() => {
     setStep(1)
     setSubmitted(false)
+    setDelivery(null)
+    setSaving(false)
+    setSubmitError("")
     setCoName("")
     setCoEmail("")
     setCoContact("")
@@ -98,6 +113,48 @@ export function CompanySignupModal() {
     direction.current === "forward"
       ? "signup-step-enter-right"
       : "signup-step-enter-left"
+
+  const completeCompanySignup = async () => {
+    const swText = software.length
+      ? software.map((id) => CO_SOFTWARE_LABELS[id] ?? id).join(", ")
+      : "(chưa chọn)"
+    const lines = [
+      "Loại: Đăng ký doanh nghiệp (VietDoc)",
+      `Tên công ty: ${coName.trim()}`,
+      `Email doanh nghiệp: ${coEmail.trim()}`,
+      `Người đại diện: ${coContact.trim()}`,
+      `Chức vụ: ${coTitle.trim() || "(không ghi)"}`,
+      `Ngành nghề: ${industry.trim() || "(chưa chọn)"}`,
+      `Quy mô: ${companySize.trim() || "(chưa chọn)"}`,
+      `Phần mềm đang dùng: ${swText}`,
+    ]
+    setSubmitError("")
+    setSaving(true)
+    const { mode, error } = await deliverSignup(
+      {
+        type: "company",
+        company_name: coName.trim(),
+        company_email: coEmail.trim(),
+        contact_name: coContact.trim(),
+        contact_title: coTitle.trim(),
+        industry: industry.trim(),
+        company_size: companySize.trim(),
+        software_ids: [...software],
+        software_labels: swText,
+      },
+      {
+        subject: `VietDoc — Đăng ký DN: ${coName.trim()}`,
+        body: lines.join("\n"),
+      }
+    )
+    setSaving(false)
+    if (error) {
+      setSubmitError(error)
+      return
+    }
+    setDelivery(mode)
+    setSubmitted(true)
+  }
 
   return (
     <ModalShell
@@ -337,13 +394,19 @@ export function CompanySignupModal() {
                     chính thức.
                   </p>
                 </div>
+                {submitError ? (
+                  <p className="mb-3 rounded border border-red/30 bg-red/5 px-3 py-2 text-[11px] text-red">
+                    {submitError}
+                  </p>
+                ) : null}
                 <button
                   type="button"
-                  onClick={() => setSubmitted(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded bg-[#F5A623] py-3 text-sm font-semibold text-[#1A1208] transition-opacity hover:opacity-90"
+                  onClick={() => void completeCompanySignup()}
+                  disabled={saving}
+                  className="flex w-full items-center justify-center gap-2 rounded bg-[#F5A623] py-3 text-sm font-semibold text-[#1A1208] transition-opacity hover:opacity-90 disabled:opacity-60"
                 >
                   <i className="ti ti-check text-base" aria-hidden />
-                  Hoàn tất đăng ký →
+                  {saving ? "Đang gửi…" : "Hoàn tất đăng ký →"}
                 </button>
                 <button
                   type="button"
@@ -362,7 +425,13 @@ export function CompanySignupModal() {
       ) : (
         <SuccessState
           title={`Chào mừng ${coName || "bạn"} đến với VietDoc! 🎉`}
-          subtitle="Chúng tôi sẽ liên hệ qua email trong 24 giờ để kích hoạt tài khoản doanh nghiệp."
+          subtitle={
+            delivery === "supabase"
+              ? "Chúng tôi đã lưu hồ sơ của bạn. Đội ngũ VietDoc sẽ liên hệ trong 24 giờ qua email doanh nghiệp."
+              : delivery === "mailto"
+                ? "Đã mở thư nháp — trong ứng dụng thư, nhấn Gửi để chúng tôi nhận được hồ sơ của bạn. Chúng tôi sẽ liên hệ trong 24 giờ sau khi nhận thư."
+                : "Trang chưa bật tiếp nhận đơn tự động. Vui lòng liên hệ VietDoc trực tiếp hoặc thử lại sau."
+          }
         >
           <div className="mb-4 rounded-lg bg-[#F5F0E4] p-3 text-left">
             {[

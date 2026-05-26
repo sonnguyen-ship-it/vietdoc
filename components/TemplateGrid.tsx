@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import Link from "next/link"
 import { templates } from "@/lib/templates"
 import type { Template } from "@/lib/types"
 import { useFilter } from "@/context/FilterContext"
@@ -30,6 +31,11 @@ export function TemplateGrid({ onOpen }: TemplateGridProps) {
 
   return (
     <section id="templates" className="space-y-4">
+      <h2 className="sr-only">
+        {lang === "vi"
+          ? "Thư viện biểu mẫu pháp lý Việt Nam"
+          : "Vietnamese legal template library"}
+      </h2>
       {filtered.length === 0 ? (
         <p className="rounded-lg border border-black/10 bg-white px-4 py-8 text-center text-sm text-muted">
           {lang === "vi"
@@ -43,6 +49,14 @@ export function TemplateGrid({ onOpen }: TemplateGridProps) {
           ))}
         </div>
       )}
+      <p className="text-center">
+        <Link
+          href="/mau"
+          className="text-sm font-semibold text-red underline-offset-2 hover:underline"
+        >
+          {lang === "vi" ? "Xem thêm biểu mẫu →" : "More templates →"}
+        </Link>
+      </p>
     </section>
   )
 }

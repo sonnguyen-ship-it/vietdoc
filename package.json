@@ -3,25 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:clean": "rm -rf .next && next dev",
+    "dev": "bash scripts/dev.sh",
+    "dev:clean": "rm -rf .next && bash scripts/dev.sh",
+    "dev:poll": "WATCHPACK_POLLING=true WATCHPACK_POLLING_INTERVAL=1000 bash scripts/dev.sh",
+    "dev:native": "VIET_DOC_NATIVE_WATCH=1 bash scripts/dev.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@lexical/history": "^0.44.0",
+    "@lexical/link": "^0.44.0",
+    "@lexical/list": "^0.44.0",
+    "@lexical/react": "^0.44.0",
+    "@lexical/rich-text": "^0.44.0",
+    "@lexical/selection": "^0.44.0",
+    "@lexical/table": "^0.44.0",
+    "@lexical/utils": "^0.44.0",
+    "@supabase/supabase-js": "^2.105.4",
+    "docx": "^9.6.1",
+    "lexical": "^0.44.0",
+    "next": "14.2.35",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.35"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35"
+    "typescript": "^5"
   }
 }

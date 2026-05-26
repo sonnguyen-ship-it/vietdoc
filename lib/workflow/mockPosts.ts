@@ -1,0 +1,62 @@
+import type { WorkflowPost } from "@/lib/workflow/types"
+
+/** Placeholder feed until Workflow tables are seeded in Supabase. */
+export const WORKFLOW_MOCK_POSTS: WorkflowPost[] = [
+  {
+    id: "mock-1",
+    created_at: new Date().toISOString(),
+    caption: "3-minute standup: blockers, wins, and what ships today.",
+    media_type: "text",
+    media_url: null,
+    poster_url: null,
+    like_count: 128,
+    comment_count: 14,
+    share_count: 6,
+    tags: ["standup", "team"],
+    author: {
+      id: "mock-author-1",
+      handle: "linh.pm",
+      display_name: "Linh Nguyễn",
+      avatar_url: null,
+      role_title: "Product Lead",
+    },
+  },
+  {
+    id: "mock-2",
+    created_at: new Date().toISOString(),
+    caption: "How we cut invoice approval from 5 days to 4 hours.",
+    media_type: "text",
+    media_url: null,
+    poster_url: null,
+    like_count: 892,
+    comment_count: 67,
+    share_count: 41,
+    tags: ["ops", "finance"],
+    author: {
+      id: "mock-author-2",
+      handle: "minh.ops",
+      display_name: "Minh Trần",
+      avatar_url: null,
+      role_title: "Operations",
+    },
+  },
+  {
+    id: "mock-3",
+    created_at: new Date().toISOString(),
+    caption: "Template walkthrough: employment contract clause checklist (2025).",
+    media_type: "text",
+    media_url: null,
+    poster_url: null,
+    like_count: 456,
+    comment_count: 38,
+    share_count: 22,
+    tags: ["legal", "templates"],
+    author: {
+      id: "mock-author-3",
+      handle: "vietdoc.legal",
+      display_name: "VietDoc Legal",
+      avatar_url: null,
+      role_title: "Legal Ops",
+    },
+  },
+]

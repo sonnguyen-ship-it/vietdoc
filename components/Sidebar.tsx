@@ -40,38 +40,40 @@ export function Sidebar() {
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">
           {lang === "vi" ? "Danh mục" : "Categories"}
         </p>
-        <ul className="mt-3 space-y-1">
-          {ROWS.map((row) => {
-            const active = activeCat === row.id
-            const n = countFor(row.id)
-            return (
-              <li key={row.id}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveCat(row.id)
-                    setActiveFilter("all")
-                  }}
-                  className={`flex w-full items-center justify-between rounded border px-2 py-2 text-left text-sm transition-colors ${
-                    active
-                      ? "border-red/30 bg-red/5 text-ink"
-                      : "border-transparent text-ink2 hover:bg-paper2"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="text-base">{ICONS[row.id]}</span>
-                    <span className="font-medium">
-                      {lang === "vi" ? row.vi : row.en}
+        <nav aria-label={lang === "vi" ? "Danh mục biểu mẫu" : "Template categories"}>
+          <ul className="mt-3 space-y-1">
+            {ROWS.map((row) => {
+              const active = activeCat === row.id
+              const n = countFor(row.id)
+              return (
+                <li key={row.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveCat(row.id)
+                      setActiveFilter("all")
+                    }}
+                    className={`flex w-full items-center justify-between rounded border px-2 py-2 text-left text-sm transition-colors ${
+                      active
+                        ? "border-red/30 bg-red/5 text-ink"
+                        : "border-transparent text-ink2 hover:bg-paper2"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-base">{ICONS[row.id]}</span>
+                      <span className="font-medium">
+                        {lang === "vi" ? row.vi : row.en}
+                      </span>
                     </span>
-                  </span>
-                  <span className="rounded-full border border-black/10 bg-paper px-2 py-0.5 text-[10px] font-bold text-muted">
-                    {n}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+                    <span className="rounded-full border border-black/10 bg-paper px-2 py-0.5 text-[10px] font-bold text-muted">
+                      {n}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
       </div>
 
       <div className="mt-4 rounded-lg border border-black/10 bg-white p-4">
