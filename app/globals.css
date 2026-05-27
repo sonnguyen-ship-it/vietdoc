@@ -369,3 +369,160 @@ body {
     background: white !important;
   }
 }
+
+/* ── Workflow desktop — Apple Glass tokens ── */
+.wf-desktop-root {
+  --wf-surface: #f2ede4;
+  --wf-ink: #1a1208;
+  --wf-ink-muted: rgba(26, 18, 8, 0.5);
+  --wf-ink-subtle: rgba(26, 18, 8, 0.28);
+  --wf-red: #c8102e;
+  --wf-glass-thin: rgba(255, 255, 255, 0.4);
+  --wf-glass-mid: rgba(255, 255, 255, 0.55);
+  --wf-glass-heavy: rgba(255, 255, 255, 0.75);
+  --wf-glass-border: rgba(255, 255, 255, 0.85);
+  --wf-glass-border-subtle: rgba(255, 255, 255, 0.4);
+  --wf-neon-lime: #c8ff00;
+  --wf-neon-violet: #b388ff;
+  --wf-neon-coral: #ff6b6b;
+  --wf-neon-cyan: #00e5ff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+}
+
+.wf-glass-thin {
+  background: var(--wf-glass-thin);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 0.5px solid var(--wf-glass-border-subtle);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.wf-glass-mid {
+  background: var(--wf-glass-mid);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 0.5px solid var(--wf-glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.wf-glass-heavy {
+  background: var(--wf-glass-heavy);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 0.5px solid var(--wf-glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.wf-glass-card {
+  background: var(--wf-glass-mid);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 0.5px solid var(--wf-glass-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.wf-glass-toolbar {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 #fff,
+    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+.wf-neon-pill-lime {
+  background: rgba(200, 255, 0, 0.14);
+  border: 0.5px solid rgba(200, 255, 0, 0.35);
+  color: var(--wf-ink);
+}
+
+.wf-neon-pill-violet {
+  background: rgba(179, 136, 255, 0.14);
+  border: 0.5px solid rgba(179, 136, 255, 0.35);
+  color: var(--wf-ink);
+}
+
+.wf-blob {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.wf-blob-violet {
+  background: #b388ff;
+  opacity: 0.18;
+  filter: blur(60px);
+}
+
+.wf-blob-cyan {
+  background: #00e5ff;
+  opacity: 0.18;
+  filter: blur(60px);
+}
+
+.wf-blob-lime {
+  background: #c8ff00;
+  opacity: 0.18;
+  filter: blur(60px);
+}
+
+.wf-blob-coral {
+  background: #ff6b6b;
+  opacity: 0.14;
+  filter: blur(50px);
+}
+
+.wf-post-frame {
+  border-radius: 0;
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.22),
+    0 0 0 0.5px rgba(255, 255, 255, 0.1);
+}
+
+.wf-word-chip {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 0.1em 0.35em;
+  vertical-align: middle;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.wf-rail-glass-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: var(--wf-glass-mid);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 0.5px solid var(--wf-glass-border);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.wf-plan-surface {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+}
+
+.wf-plan-page {
+  background: #f0e8dc;
+}

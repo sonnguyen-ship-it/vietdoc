@@ -7,6 +7,7 @@ import { WorkflowPostChrome } from "@/components/workflow/shared/WorkflowPostChr
 
 export function MeetingNotesPost({
   post,
+  layout,
   onScrollUp,
   onScrollDown,
   canScrollUp,
@@ -14,6 +15,7 @@ export function MeetingNotesPost({
   onOpenVideo,
 }: {
   post: WorkfeedNotesPost
+  layout?: "mobile" | "desktop"
   onScrollUp?: () => void
   onScrollDown?: () => void
   canScrollUp?: boolean
@@ -31,6 +33,7 @@ export function MeetingNotesPost({
   return (
     <WorkflowPostChrome
       post={post}
+      layout={layout}
       onScrollUp={onScrollUp}
       onScrollDown={onScrollDown}
       canScrollUp={canScrollUp}

@@ -8,6 +8,7 @@ import { VideoBriefPost } from "@/components/workflow/posts/VideoBriefPost"
 
 type WorkfeedPostRouterProps = {
   post: WorkfeedPost
+  layout?: "mobile" | "desktop"
   onScrollUp?: () => void
   onScrollDown?: () => void
   canScrollUp?: boolean
@@ -17,13 +18,14 @@ type WorkfeedPostRouterProps = {
 
 export function WorkfeedPostRouter({
   post,
+  layout = "mobile",
   onScrollUp,
   onScrollDown,
   canScrollUp,
   canScrollDown,
   onOpenPost,
 }: WorkfeedPostRouterProps) {
-  const scrollProps = { onScrollUp, onScrollDown, canScrollUp, canScrollDown }
+  const scrollProps = { layout, onScrollUp, onScrollDown, canScrollUp, canScrollDown }
 
   switch (post.kind) {
     case "boss-announcement":

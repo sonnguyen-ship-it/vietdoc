@@ -14,6 +14,8 @@ type WorkflowFabMenuProps = {
   onToggle: () => void
   onHighlight: () => void
   onNote: () => void
+  onPost?: () => void
+  variant?: "mobile" | "desktop"
 }
 
 const SPIN_ACTIONS: Omit<FabAction, "onClick">[] = [
@@ -22,15 +24,37 @@ const SPIN_ACTIONS: Omit<FabAction, "onClick">[] = [
   { id: "note", label: "Note", icon: "✎", offsetX: 56, offsetY: -52 },
 ]
 
-export function WorkflowFabMenu({ open, onToggle, onHighlight, onNote }: WorkflowFabMenuProps) {
+export function WorkflowFabMenu({
+  open,
+  onToggle,
+  onHighlight,
+  onNote,
+  onPost,
+  variant = "mobile",
+}: WorkflowFabMenuProps) {
+  const isDesktop = variant === "desktop"
+
   const actions: FabAction[] = SPIN_ACTIONS.map((a) => ({
     ...a,
     onClick:
-      a.id === "highlight" ? onHighlight : a.id === "note" ? onNote : onToggle,
+      a.id === "highlight"
+        ? onHighlight
+        : a.id === "note"
+          ? onNote
+          : () => {
+              onPost?.()
+              onToggle()
+            },
   }))
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-[max(0.35rem,env(safe-area-inset-bottom))] flex justify-center">
+    <div
+      className={
+        isDesktop
+          ? "pointer-events-none relative flex h-14 w-14 items-center justify-center"
+          : "pointer-events-none absolute inset-x-0 bottom-[max(0.35rem,env(safe-area-inset-bottom))] flex justify-center"
+      }
+    >
       <div className="relative h-14 w-14">
         {actions.map((action, i) => (
           <button
@@ -40,7 +64,7 @@ export function WorkflowFabMenu({ open, onToggle, onHighlight, onNote }: Workflo
               action.onClick()
               if (action.id !== "highlight" && action.id !== "note") onToggle()
             }}
-            className={`absolute left-1/2 top-1/2 flex h-11 w-11 flex-col items-center justify-center rounded-full bg-white text-[#1a1208] shadow-lg ring-1 ring-black/10 transition-all duration-300 ease-out ${
+            className={`absolute left-1/2 top-1/2 flex h-11 w-11 flex-col items-center justify-center rounded-full border border-[color:var(--wf-glass-border)] bg-[rgba(255,255,255,0.78)] text-[#1a1208] shadow-[0_10px_28px_rgba(0,0,0,0.16)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 ease-out ${
               open ? "pointer-events-auto" : "pointer-events-none"
             }`}
             style={{

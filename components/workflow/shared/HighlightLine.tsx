@@ -4,17 +4,29 @@ export function HighlightLine({
   parts,
   className = "",
   darkMentions = false,
+  variant = "default",
 }: {
   parts: WorkfeedTextPart[]
   className?: string
   darkMentions?: boolean
+  /** Boss announcement on dark post window */
+  variant?: "default" | "boss-desktop"
 }) {
+  const isBossDesktop = variant === "boss-desktop"
+
   return (
-    <p className={`font-black leading-tight ${className}`}>
+    <p
+      className={`font-extrabold leading-[1.15] tracking-[-0.04em] ${
+        isBossDesktop ? "text-[26px] text-white" : "font-black leading-tight"
+      } ${className}`}
+    >
       {parts.map((part, i) => {
         if (part.type === "text") {
           return (
-            <span key={i} className="text-[#1a1208]">
+            <span
+              key={i}
+              className={isBossDesktop ? "text-white/95" : "text-[#1a1208]"}
+            >
               {part.value}
             </span>
           )
@@ -22,12 +34,10 @@ export function HighlightLine({
         return (
           <span
             key={i}
-            className="mx-0.5 inline-block rounded-md px-1.5 py-0.5 align-middle"
+            className={`wf-word-chip mx-0.5 ${part.large ? "text-[2rem]" : ""}`}
             style={{
               backgroundColor: part.bg,
               color: part.color ?? "#1a1208",
-              fontSize: part.large ? "2rem" : undefined,
-              lineHeight: part.large ? 1.1 : undefined,
             }}
           >
             {part.value}
@@ -45,11 +55,11 @@ export function MentionPills({ mentions, onDark }: { mentions: string[]; onDark?
       {mentions.map((m) => (
         <span
           key={m}
-          className="rounded-full px-3 py-1 text-sm font-bold"
-          style={{
-            backgroundColor: onDark ? "rgba(125, 211, 252, 0.2)" : "rgba(29, 78, 216, 0.12)",
-            color: onDark ? "#7dd3fc" : "#1d4ed8",
-          }}
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            onDark
+              ? "border border-[rgba(200,255,0,0.35)] bg-[rgba(200,255,0,0.12)] text-[#d4ff66]"
+              : "wf-neon-pill-violet"
+          }`}
         >
           {m}
         </span>

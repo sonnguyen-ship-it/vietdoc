@@ -22,9 +22,11 @@ export function WorkflowTabBar({ activeTab, onTabChange, dark }: WorkflowTabBarP
 
   return (
     <nav
-      className={`pointer-events-auto absolute inset-x-0 bottom-0 touch-manipulation pb-[max(0.5rem,env(safe-area-inset-bottom))] ${
-        dark ? "bg-black/75 backdrop-blur-md" : "bg-white/95 backdrop-blur-md"
-      }`}
+      className={`pointer-events-auto absolute inset-x-0 bottom-0 touch-manipulation border-t ${
+        dark
+          ? "border-white/10 bg-black/55"
+          : "border-[color:var(--wf-glass-border)] bg-[rgba(255,255,255,0.74)]"
+      } pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl backdrop-saturate-150`}
       aria-label="Workflow navigation"
     >
       <ul className="flex items-stretch justify-around px-1 pt-1">

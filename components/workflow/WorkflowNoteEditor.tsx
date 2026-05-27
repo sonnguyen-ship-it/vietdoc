@@ -5,12 +5,17 @@ import { WORKFLOW_TAB_BAR_OFFSET } from "@/lib/workflow/workfeed/layout"
 
 type WorkflowNoteEditorProps = {
   onClose: () => void
+  desktop?: boolean
 }
 
-export function WorkflowNoteEditor({ onClose }: WorkflowNoteEditorProps) {
+export function WorkflowNoteEditor({ onClose, desktop }: WorkflowNoteEditorProps) {
   return (
     <div className="absolute inset-0 z-[55] flex flex-col overflow-hidden bg-paper text-ink">
-      <header className="flex shrink-0 items-center justify-between border-b border-black/10 bg-white px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
+      <header
+        className={`flex shrink-0 items-center justify-between border-b border-black/10 bg-white px-3 py-2 ${
+          desktop ? "" : "pt-[max(0.5rem,env(safe-area-inset-top))]"
+        }`}
+      >
         <button
           type="button"
           onClick={onClose}
@@ -30,7 +35,7 @@ export function WorkflowNoteEditor({ onClose }: WorkflowNoteEditorProps) {
 
       <div
         className="min-h-0 flex-1 overflow-hidden"
-        style={{ paddingBottom: WORKFLOW_TAB_BAR_OFFSET }}
+        style={desktop ? undefined : { paddingBottom: WORKFLOW_TAB_BAR_OFFSET }}
       >
         <DocModEditor />
       </div>

@@ -6,12 +6,14 @@ import { WorkflowPostChrome } from "@/components/workflow/shared/WorkflowPostChr
 
 export function VideoBriefPost({
   post,
+  layout,
   onScrollUp,
   onScrollDown,
   canScrollUp,
   canScrollDown,
 }: {
   post: WorkfeedVideoPost
+  layout?: "mobile" | "desktop"
   onScrollUp?: () => void
   onScrollDown?: () => void
   canScrollUp?: boolean
@@ -22,6 +24,7 @@ export function VideoBriefPost({
   return (
     <WorkflowPostChrome
       post={post}
+      layout={layout}
       onScrollUp={onScrollUp}
       onScrollDown={onScrollDown}
       canScrollUp={canScrollUp}

@@ -22,6 +22,15 @@ const config: Config = {
         border2: "rgba(26,18,8,0.18)",
         green: "#1D6E45",
         blue: "#1A4E7A",
+        wf: {
+          surface: "#f2ede4",
+          ink: "#1a1208",
+          red: "#C8102E",
+          lime: "#c8ff00",
+          violet: "#b388ff",
+          coral: "#ff6b6b",
+          cyan: "#00e5ff",
+        },
       },
       borderRadius: {
         lg: "10px",

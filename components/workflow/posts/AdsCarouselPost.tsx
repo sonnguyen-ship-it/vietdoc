@@ -119,12 +119,14 @@ function KocCard() {
 
 export function AdsCarouselPost({
   post,
+  layout,
   onScrollUp,
   onScrollDown,
   canScrollUp,
   canScrollDown,
 }: {
   post: WorkfeedCarouselPost
+  layout?: "mobile" | "desktop"
   onScrollUp?: () => void
   onScrollDown?: () => void
   canScrollUp?: boolean
@@ -170,6 +172,7 @@ export function AdsCarouselPost({
   return (
     <WorkflowPostChrome
       post={post}
+      layout={layout}
       onScrollUp={onScrollUp}
       onScrollDown={onScrollDown}
       canScrollUp={canScrollUp}

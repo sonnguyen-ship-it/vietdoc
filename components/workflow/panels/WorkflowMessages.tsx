@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react"
 import type { WorkfeedChat, WorkfeedChatMessage } from "@/lib/workflow/workfeed/types"
+import { MoodboardShareCard } from "@/components/workflow/shared/MoodboardShareCard"
 
-function MessageBubble({ msg }: { msg: WorkfeedChatMessage }) {
+function MessageBubble({
+  msg,
+  onOpenMoodPin,
+}: {
+  msg: WorkfeedChatMessage
+  onOpenMoodPin?: (pinId: string) => void
+}) {
   const isRight = msg.align === "right"
   const base = `max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
     isRight ? "ml-auto bg-blue text-white" : "mr-auto bg-[#f5f0e4] text-[#1a1208]"
@@ -16,6 +23,19 @@ function MessageBubble({ msg }: { msg: WorkfeedChatMessage }) {
           ◎ Highlight
         </p>
         <p className="font-medium">{msg.text}</p>
+      </div>
+    )
+  }
+
+  if (msg.kind === "mood-pin") {
+    return (
+      <div className={isRight ? "ml-auto max-w-[85%]" : "mr-auto max-w-[85%]"}>
+        <MoodboardShareCard
+          msg={msg}
+          onOpen={
+            msg.moodPin?.id && onOpenMoodPin ? () => onOpenMoodPin(msg.moodPin!.id) : undefined
+          }
+        />
       </div>
     )
   }
@@ -53,9 +73,17 @@ function MessageBubble({ msg }: { msg: WorkfeedChatMessage }) {
   return <div className={base}>{msg.text}</div>
 }
 
-function ChatThread({ chat, onBack }: { chat: WorkfeedChat; onBack: () => void }) {
+function ChatThread({
+  chat,
+  onBack,
+  onOpenMoodPin,
+}: {
+  chat: WorkfeedChat
+  onBack: () => void
+  onOpenMoodPin?: (pinId: string) => void
+}) {
   return (
-    <div className="flex h-full flex-col bg-white pt-12 text-[#1a1208]">
+    <div className="flex h-full min-h-full flex-col bg-white pt-12 text-[#1a1208]">
       <header className="flex items-center gap-2 border-b border-black/10 px-3 py-2">
         <button type="button" onClick={onBack} className="bg-transparent p-1 text-lg">
           ←
@@ -80,7 +108,7 @@ function ChatThread({ chat, onBack }: { chat: WorkfeedChat; onBack: () => void }
           chat.messages.map((m) => (
             <div key={m.id}>
               <p className="mb-1 text-[10px] font-bold text-[#1a1208]/45">{m.sender}</p>
-              <MessageBubble msg={m} />
+              <MessageBubble msg={m} onOpenMoodPin={onOpenMoodPin} />
             </div>
           ))
         )}
@@ -106,15 +134,22 @@ type WorkflowMessagesProps = {
   chats: WorkfeedChat[]
   openChatId?: string | null
   onOpenChatHandled?: () => void
+  onOpenMoodPin?: (pinId: string) => void
 }
 
-export function WorkflowMessages({ chats, openChatId, onOpenChatHandled }: WorkflowMessagesProps) {
+export function WorkflowMessages({
+  chats,
+  openChatId,
+  onOpenChatHandled,
+  onOpenMoodPin,
+}: WorkflowMessagesProps) {
   const [activeChatId, setActiveChatId] = useState<string | null>(null)
 
   const activeChat = chats.find((c) => c.id === activeChatId) ?? null
 
   const directChats = chats.filter((c) => c.kind === "direct")
-  const groupChats = chats.filter((c) => c.kind !== "direct")
+  const clientChats = chats.filter((c) => c.kind === "client")
+  const groupChats = chats.filter((c) => c.kind !== "direct" && c.kind !== "client")
 
   useEffect(() => {
     if (!openChatId) return
@@ -123,12 +158,33 @@ export function WorkflowMessages({ chats, openChatId, onOpenChatHandled }: Workf
   }, [openChatId, onOpenChatHandled])
 
   if (activeChat) {
-    return <ChatThread chat={activeChat} onBack={() => setActiveChatId(null)} />
+    return (
+      <ChatThread
+        chat={activeChat}
+        onBack={() => setActiveChatId(null)}
+        onOpenMoodPin={onOpenMoodPin}
+      />
+    )
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-white pt-14 pb-28 text-[#1a1208]">
+    <div className="h-full min-h-full overflow-y-auto bg-white pt-14 pb-28 text-[#1a1208]">
       <h1 className="px-4 text-lg font-black">Messages</h1>
+
+      {clientChats.length > 0 ? (
+        <section className="mt-4">
+          <p className="px-4 text-[10px] font-extrabold uppercase tracking-wide text-[#1a1208]/45">
+            Client chat
+          </p>
+          <ul>
+            {clientChats.map((chat) => (
+              <li key={chat.id}>
+                <ChatListRow chat={chat} onOpen={() => setActiveChatId(chat.id)} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {directChats.length > 0 ? (
         <section className="mt-4">

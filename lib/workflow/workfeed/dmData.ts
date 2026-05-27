@@ -1,3 +1,4 @@
+import { buildHighlightRef } from "@/lib/workflow/workfeed/highlightRef"
 import type { WorkfeedChat, WorkfeedDmRecipient } from "@/lib/workflow/workfeed/types"
 
 export const WORKFEED_CURRENT_USER = "employee2"
@@ -27,6 +28,15 @@ export const WORKFEED_DIRECT_THREADS: WorkfeedChat[] = [
         kind: "highlight",
         text: "assets có chưa e?",
         align: "right",
+        highlightPath: "M 120 80 L 140 90 L 160 85 L 180 95",
+        highlightRef: buildHighlightRef({
+          mainTab: "plan",
+          sheetId: "plan-client-a",
+          planRow: 0,
+          planCol: 3,
+          pathD: "M 120 80 L 140 90 L 160 85 L 180 95",
+          label: "Week 3 · @hienvuive KOC live",
+        }),
       },
     ],
   },

@@ -1,3 +1,28 @@
+export type WorkfeedMainTab = "feed" | "plan" | "moodboard"
+
+/** `rect` = filled region (desktop drag); `stroke` = freehand path (mobile). */
+export type WorkfeedHighlightStyle = "rect" | "stroke"
+
+export type WorkfeedHighlightRef = {
+  id: string
+  mainTab: WorkfeedMainTab
+  pathD: string
+  highlightStyle?: WorkfeedHighlightStyle
+  label?: string
+  snapshotDataUrl?: string
+  postId?: string
+  slideIndex?: number
+  sheetId?: string
+  planRow?: number
+  planCol?: number
+  pinId?: string
+}
+
+export type WorkfeedHighlightDragPayload = {
+  text: string
+  ref: WorkfeedHighlightRef
+}
+
 export type WorkfeedComment = {
   id: string
   author: string
@@ -118,13 +143,16 @@ export type WorkfeedNotification = {
 export type WorkfeedChatMessage = {
   id: string
   sender: string
-  kind: "text" | "table" | "list-card" | "highlight"
+  kind: "text" | "table" | "list-card" | "highlight" | "mood-pin"
   text?: string
   table?: { headers: string[] }
   listCard?: { items: string[]; caption: string }
   align: "left" | "right"
   /** SVG path for highlight circle sketch */
   highlightPath?: string
+  /** Deep link back to Feed / Plan / Board */
+  highlightRef?: WorkfeedHighlightRef
+  moodPin?: { id: string; title: string; gradient: string; brand?: string }
 }
 
 export type WorkfeedChat = {
@@ -136,7 +164,7 @@ export type WorkfeedChat = {
   time: string
   unread: number
   messages: WorkfeedChatMessage[]
-  kind?: "group" | "direct"
+  kind?: "group" | "direct" | "client"
   handle?: string
 }
 
@@ -169,6 +197,8 @@ export type WorkfeedMoodPin = {
   title: string
   projectId: string
   gradient: string
+  /** Optional real image background (used by Moodboard tab). */
+  imageUrl?: string
   height: number
   tags: string[]
   saved: boolean
